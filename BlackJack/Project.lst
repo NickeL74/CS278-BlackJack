@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.10.25019.0	    11/30/17 12:46:30
+Microsoft (R) Macro Assembler Version 14.10.25019.0	    11/30/17 14:10:31
 Main.asm						     Page 1 - 1
 
 
@@ -25,13 +25,80 @@ Main.asm						     Page 1 - 1
 			      C 
 
  00000000			.data
+				;player hand values
  00000000  0000000E [		playerHand BYTE 14 DUP(?)
 	    00
 	   ]
+ 0000000E 00			cardsInPlayerHand BYTE 0
+ 0000000F 2D 2D 2D 2D 2D	playerHandIndicator BYTE "------Your Hand-----", 0ah, 0h
+	   2D 59 6F 75 72
+	   20 48 61 6E 64
+	   2D 2D 2D 2D 2D
+	   0A 00
+
+				;dealer hand values
+ 00000025  0000000E [		dealerHand BYTE 14 DUP(?), 1
+	    00
+	   ] 01
+ 00000034 00			cardsInDealerHand BYTE 0
+ 00000035 2D 2D 2D 2D 2D	dealerHandIndicator BYTE "------Dealer's Hand------", 0ah, 0h
+	   2D 44 65 61 6C
+	   65 72 27 73 20
+	   48 61 6E 64 2D
+	   2D 2D 2D 2D 2D
+	   0A 00
+
+				;User input values
+ 00000050 57 6F 75 6C 64	whatToDo BYTE "Would you like to hit or stay?", 0ah, "Type 'hit' or 'stay' then press enter to submit.", 0ah, 0h
+	   20 79 6F 75 20
+	   6C 69 6B 65 20
+	   74 6F 20 68 69
+	   74 20 6F 72 20
+	   73 74 61 79 3F
+	   0A 54 79 70 65
+	   20 27 68 69 74
+	   27 20 6F 72 20
+	   27 73 74 61 79
+	   27 20 74 68 65
+	   6E 20 70 72 65
+	   73 73 20 65 6E
+	   74 65 72 20 74
+	   6F 20 73 75 62
+	   6D 69 74 2E 0A
+	   00
+ 000000A1  00000005 [		input BYTE 5 DUP(?)
+	    00
+	   ]
+ 000000A6 68 69 74		hitTest BYTE "hit"
 
 
 				;Cards displayed
- 0000000E DA C4 C4 C4 C4	Ace BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 000000A9 DA C4 C4 C4 C4	Back BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+	   C4 C4 C4 C4 C4
+	   C4 BF 0A 7C 2E
+	   2E 2E 2E 2E 2E
+	   2E 2E 2E 2E 7C
+	   0A 7C 2E 2E 2E
+	   2E 2E 2E 2E 2E
+	   2E 2E 7C 0A 7C
+	   2E 2E 2E 2E 2E
+	   2E 2E 2E 2E 2E
+	   7C 0A 7C 2E 2E
+	   2E 2E 2E 2E 2E
+	   2E 2E 2E 7C 0A
+	   7C 2E 2E 2E 2E
+	   2E 2E 2E 2E 2E
+	   2E 7C 0A C0 C4
+	   C4 C4 C4 C4 C4
+	   C4 C4 C4 C4 D9
+	   0A 00
+				"|..........|", 0ah,
+				"|..........|", 0ah,
+				"|..........|", 0ah,
+				"|..........|", 0ah,
+				"|..........|", 0ah,
+				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
+ 00000105 DA C4 C4 C4 C4	Ace BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 41
 	   2E 2E 2E 2E 2E
@@ -56,7 +123,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........A|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 0000006A DA C4 C4 C4 C4	Two BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000161 DA C4 C4 C4 C4	Two BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 32
 	   2E 2E 2E 2E 2E
@@ -81,7 +148,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........2|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 000000C6 DA C4 C4 C4 C4	Three BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 000001BD DA C4 C4 C4 C4	Three BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 33
 	   2E 2E 2E 2E 2E
@@ -106,7 +173,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........3|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 00000122 DA C4 C4 C4 C4	Four BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000219 DA C4 C4 C4 C4	Four BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 34
 	   2E 2E 2E 2E 2E
@@ -131,7 +198,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........4|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 0000017E DA C4 C4 C4 C4	Five BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000275 DA C4 C4 C4 C4	Five BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 35
 	   2E 2E 2E 2E 2E
@@ -156,7 +223,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........5|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 000001DA DA C4 C4 C4 C4	Six  BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 000002D1 DA C4 C4 C4 C4	Six  BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 36
 	   2E 2E 2E 2E 2E
@@ -181,7 +248,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........6|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 00000236 DA C4 C4 C4 C4	Seven BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 0000032D DA C4 C4 C4 C4	Seven BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 37
 	   2E 2E 2E 2E 2E
@@ -206,7 +273,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........7|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 00000292 DA C4 C4 C4 C4	Eight BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000389 DA C4 C4 C4 C4	Eight BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 38
 	   2E 2E 2E 2E 2E
@@ -231,7 +298,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........8|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 000002EE DA C4 C4 C4 C4	Nine BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 000003E5 DA C4 C4 C4 C4	Nine BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 39
 	   2E 2E 2E 2E 2E
@@ -256,7 +323,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........9|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 0000034A DA C4 C4 C4 C4	Ten BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000441 DA C4 C4 C4 C4	Ten BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 31
 	   30 2E 2E 2E 2E
@@ -281,7 +348,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|........10|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 000003A6 DA C4 C4 C4 C4	Jack BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 0000049D DA C4 C4 C4 C4	Jack BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 4A
 	   2E 2E 2E 2E 2E
@@ -306,7 +373,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........J|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 00000402 DA C4 C4 C4 C4	Queen BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 000004F9 DA C4 C4 C4 C4	Queen BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 51
 	   2E 2E 2E 2E 2E
@@ -331,7 +398,7 @@ Main.asm						     Page 1 - 1
 				"|..........|", 0ah,
 				"|.........Q|", 0ah,
 				0c0h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0d9h, 0ah, 0h
- 0000045E DA C4 C4 C4 C4	King BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
+ 00000555 DA C4 C4 C4 C4	King BYTE 0dah, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0c4h, 0bfh, 0ah,
 	   C4 C4 C4 C4 C4
 	   C4 BF 0A 7C 4B
 	   2E 2E 2E 2E 2E
@@ -359,7 +426,7 @@ Main.asm						     Page 1 - 1
 
 
  00000000			.code
- 00000000			displayHand proc
+ 00000000			displayPlayerHand proc
  00000000  B9 0000000E			mov ecx, LENGTHOF playerHand ;set loop number for number of cards in hand
  00000005  49				dec ecx ;decrease ecx bacause array starts with 0 not 1
  00000006				L1: ;loop through all cards
@@ -405,91 +472,91 @@ Main.asm						     Page 1 - 1
  00000074  7D 90					jge L1
  00000076  0F 8E 0000013A				jng Return
  0000007C					cardTwo:
- 0000007C  BA 0000006A R				mov edx, OFFSET Two
+ 0000007C  BA 00000161 R				mov edx, OFFSET Two
  00000081  E8 00000000 E				call WriteString
  00000086  49						dec ecx
  00000087  83 F9 00					cmp ecx, 0
  0000008A  0F 8D FFFFFF76				jge L1
  00000090  0F 8E 00000120				jng Return
  00000096					cardThree:
- 00000096  BA 000000C6 R				mov edx, OFFSET Three
+ 00000096  BA 000001BD R				mov edx, OFFSET Three
  0000009B  E8 00000000 E				call WriteString
  000000A0  49						dec ecx
  000000A1  83 F9 00					cmp ecx, 0
  000000A4  0F 8D FFFFFF5C				jge L1
  000000AA  0F 8E 00000106				jng Return
  000000B0					cardFour:
- 000000B0  BA 00000122 R				mov edx, OFFSET Four
+ 000000B0  BA 00000219 R				mov edx, OFFSET Four
  000000B5  E8 00000000 E				call WriteString
  000000BA  49						dec ecx 
  000000BB  83 F9 00					cmp ecx, 0
  000000BE  0F 8D FFFFFF42				jge L1
  000000C4  0F 8E 000000EC				jng Return
  000000CA					cardFive:
- 000000CA  BA 0000017E R				mov edx, OFFSET Five
+ 000000CA  BA 00000275 R				mov edx, OFFSET Five
  000000CF  E8 00000000 E				call WriteString
  000000D4  49						dec ecx 
  000000D5  83 F9 00					cmp ecx, 0
  000000D8  0F 8D FFFFFF28				jge L1
  000000DE  0F 8E 000000D2				jng Return
  000000E4					cardSix:
- 000000E4  BA 000001DA R				mov edx, OFFSET Six
+ 000000E4  BA 000002D1 R				mov edx, OFFSET Six
  000000E9  E8 00000000 E				call WriteString
  000000EE  49						dec ecx 
  000000EF  83 F9 00					cmp ecx, 0
  000000F2  0F 8D FFFFFF0E				jge L1
  000000F8  0F 8E 000000B8				jng Return
  000000FE					cardSeven:
- 000000FE  BA 00000236 R				mov edx, OFFSET Seven
+ 000000FE  BA 0000032D R				mov edx, OFFSET Seven
  00000103  E8 00000000 E				call WriteString
  00000108  49						dec ecx 
  00000109  83 F9 00					cmp ecx, 0
  0000010C  0F 8D FFFFFEF4				jge L1
  00000112  0F 8E 0000009E				jng Return
  00000118					cardEight:
- 00000118  BA 00000292 R				mov edx, OFFSET Eight
+ 00000118  BA 00000389 R				mov edx, OFFSET Eight
  0000011D  E8 00000000 E				call WriteString
  00000122  49						dec ecx 
  00000123  83 F9 00					cmp ecx, 0
  00000126  0F 8D FFFFFEDA				jge L1
  0000012C  0F 8E 00000084				jng Return
  00000132					cardNine:
- 00000132  BA 000002EE R				mov edx, OFFSET Nine
+ 00000132  BA 000003E5 R				mov edx, OFFSET Nine
  00000137  E8 00000000 E				call WriteString
  0000013C  49						dec ecx 
  0000013D  83 F9 00					cmp ecx, 0
  00000140  0F 8D FFFFFEC0				jge L1
  00000146  7E 6E					jng Return
  00000148					cardTen:
- 00000148  BA 0000034A R				mov edx, OFFSET Ten
+ 00000148  BA 00000441 R				mov edx, OFFSET Ten
  0000014D  E8 00000000 E				call WriteString
  00000152  49						dec ecx 
  00000153  83 F9 00					cmp ecx, 0
  00000156  0F 8D FFFFFEAA				jge L1
  0000015C  7E 58					jng Return
  0000015E					cardJack:
- 0000015E  BA 000003A6 R				mov edx, OFFSET Jack
+ 0000015E  BA 0000049D R				mov edx, OFFSET Jack
  00000163  E8 00000000 E				call WriteString
  00000168  49						dec ecx 
  00000169  83 F9 00					cmp ecx, 0
  0000016C  0F 8D FFFFFE94				jge L1
  00000172  7E 42					jng Return
  00000174					cardQueen:
- 00000174  BA 00000402 R				mov edx, OFFSET Queen
+ 00000174  BA 000004F9 R				mov edx, OFFSET Queen
  00000179  E8 00000000 E				call WriteString
  0000017E  49						dec ecx 
  0000017F  83 F9 00					cmp ecx, 0
  00000182  0F 8D FFFFFE7E				jge L1
  00000188  7E 2C					jng Return
  0000018A					cardKing:
- 0000018A  BA 0000045E R				mov edx, OFFSET King
+ 0000018A  BA 00000555 R				mov edx, OFFSET King
  0000018F  E8 00000000 E				call WriteString
  00000194  49						dec ecx 
  00000195  83 F9 00					cmp ecx, 0
  00000198  0F 8D FFFFFE68				jge L1
  0000019E  7E 16					jng Return
  000001A0					cardAce:
- 000001A0  BA 0000000E R				mov edx, OFFSET Ace
+ 000001A0  BA 00000105 R				mov edx, OFFSET Ace
  000001A5  E8 00000000 E				call WriteString
  000001AA  49						dec ecx 
  000001AB  83 F9 00					cmp ecx, 0
@@ -498,26 +565,234 @@ Main.asm						     Page 1 - 1
  000001B6				Return:	;end of drawing all cards in hand
  000001B6  E8 00000000 E			call CRLF
  000001BB  C3					ret
- 000001BC			displayHand endp
+ 000001BC			displayPlayerHand endp
 
- 000001BC			main proc
- 000001BC  E8 00000000 E		call Randomize ;seed RNG for program
- 000001C1  B9 0000000D			mov ecx, 13
- 000001C6  B3 0E			mov bl, 14
- 000001C8				fillHand:
- 000001C8  88 99 00000000 R			mov [playerHand + ecx], bl
- 000001CE  FE CB				dec bl
- 000001D0  49					dec ecx
- 000001D1  83 F9 00				cmp ecx, 0
- 000001D4  75 F2				jne fillHand
- 000001D6  E8 FFFFFE25			call displayHand
+ 000001BC			displayDealerHand proc
+ 000001BC  B9 0000000F			mov ecx, LENGTHOF dealerHand ;set loop number for number of cards in hand
+ 000001C1  49				dec ecx ;decrease ecx bacause array starts with 0 not 1
+ 000001C2				L1: ;loop through all cards
+ 000001C2  8A 81 00000025 R			mov al, [dealerHand + ecx] ;move current card value to al for comparison
+
+						;compare al to all possible values and jump to corrasponding section
+ 000001C8  3C 00				cmp al, 0 ;compare if memory location doesn't hold a card
+ 000001CA  74 6C				je emptyCard
+ 000001CC  3C 01				cmp al, 1
+ 000001CE  74 74				je backCard
+ 000001D0  3C 02				cmp al, 2
+ 000001D2  0F 84 00000086			je cardTwo
+ 000001D8  3C 03				cmp al, 3
+ 000001DA  0F 84 00000098			je cardThree
+ 000001E0  3C 04				cmp al, 4
+ 000001E2  0F 84 000000AA			je cardFour
+ 000001E8  3C 05				cmp al, 5
+ 000001EA  0F 84 000000BC			je cardFive
+ 000001F0  3C 06				cmp al, 6
+ 000001F2  0F 84 000000CE			je cardSix
+ 000001F8  3C 07				cmp al, 7
+ 000001FA  0F 84 000000E0			je cardSeven
+ 00000200  3C 08				cmp al, 8
+ 00000202  0F 84 000000F2			je cardEight
+ 00000208  3C 09				cmp al, 9
+ 0000020A  0F 84 00000104			je cardNine
+ 00000210  3C 0A				cmp al, 10
+ 00000212  0F 84 00000112			je cardTen
+ 00000218  3C 0B				cmp al, 11
+ 0000021A  0F 84 00000120			je cardJack
+ 00000220  3C 0C				cmp al, 12
+ 00000222  0F 84 0000012E			je cardQueen
+ 00000228  3C 0D				cmp al, 13
+ 0000022A  0F 84 0000013C			je cardKing
+ 00000230  3C 0E				cmp al, 14
+ 00000232  0F 84 0000014A			je cardAce
+
+						;move offset of correct value to edx.
+						;Call Irvine WriteString
+						;decrament edx and if edx greater than or equal zero jump to top for next card
+						;if edx is less than zero jump to Return
+ 00000238					emptyCard:
+ 00000238  49						dec ecx
+ 00000239  83 F9 01					cmp ecx, 1
+ 0000023C  7D 84					jge L1
+ 0000023E  0F 8E 00000154				jng Return
+ 00000244					backCard:
+ 00000244  BA 000000A9 R				mov edx, OFFSET Back
+ 00000249  E8 00000000 E				call WriteString
+ 0000024E  49						dec ecx
+ 0000024F  83 F9 01					cmp ecx, 1
+ 00000252  0F 8D FFFFFF6A				jge L1
+ 00000258  0F 8E 0000013A				jng Return
+ 0000025E					cardTwo:
+ 0000025E  BA 00000161 R				mov edx, OFFSET Two
+ 00000263  E8 00000000 E				call WriteString
+ 00000268  49						dec ecx
+ 00000269  83 F9 01					cmp ecx, 1
+ 0000026C  0F 8D FFFFFF50				jge L1
+ 00000272  0F 8E 00000120				jng Return
+ 00000278					cardThree:
+ 00000278  BA 000001BD R				mov edx, OFFSET Three
+ 0000027D  E8 00000000 E				call WriteString
+ 00000282  49						dec ecx
+ 00000283  83 F9 01					cmp ecx, 1
+ 00000286  0F 8D FFFFFF36				jge L1
+ 0000028C  0F 8E 00000106				jng Return
+ 00000292					cardFour:
+ 00000292  BA 00000219 R				mov edx, OFFSET Four
+ 00000297  E8 00000000 E				call WriteString
+ 0000029C  49						dec ecx 
+ 0000029D  83 F9 01					cmp ecx, 1
+ 000002A0  0F 8D FFFFFF1C				jge L1
+ 000002A6  0F 8E 000000EC				jng Return
+ 000002AC					cardFive:
+ 000002AC  BA 00000275 R				mov edx, OFFSET Five
+ 000002B1  E8 00000000 E				call WriteString
+ 000002B6  49						dec ecx 
+ 000002B7  83 F9 01					cmp ecx, 1
+ 000002BA  0F 8D FFFFFF02				jge L1
+ 000002C0  0F 8E 000000D2				jng Return
+ 000002C6					cardSix:
+ 000002C6  BA 000002D1 R				mov edx, OFFSET Six
+ 000002CB  E8 00000000 E				call WriteString
+ 000002D0  49						dec ecx 
+ 000002D1  83 F9 01					cmp ecx, 1
+ 000002D4  0F 8D FFFFFEE8				jge L1
+ 000002DA  0F 8E 000000B8				jng Return
+ 000002E0					cardSeven:
+ 000002E0  BA 0000032D R				mov edx, OFFSET Seven
+ 000002E5  E8 00000000 E				call WriteString
+ 000002EA  49						dec ecx 
+ 000002EB  83 F9 01					cmp ecx, 1
+ 000002EE  0F 8D FFFFFECE				jge L1
+ 000002F4  0F 8E 0000009E				jng Return
+ 000002FA					cardEight:
+ 000002FA  BA 00000389 R				mov edx, OFFSET Eight
+ 000002FF  E8 00000000 E				call WriteString
+ 00000304  49						dec ecx 
+ 00000305  83 F9 01					cmp ecx, 1
+ 00000308  0F 8D FFFFFEB4				jge L1
+ 0000030E  0F 8E 00000084				jng Return
+ 00000314					cardNine:
+ 00000314  BA 000003E5 R				mov edx, OFFSET Nine
+ 00000319  E8 00000000 E				call WriteString
+ 0000031E  49						dec ecx 
+ 0000031F  83 F9 01					cmp ecx, 1
+ 00000322  0F 8D FFFFFE9A				jge L1
+ 00000328  7E 6E					jng Return
+ 0000032A					cardTen:
+ 0000032A  BA 00000441 R				mov edx, OFFSET Ten
+ 0000032F  E8 00000000 E				call WriteString
+ 00000334  49						dec ecx 
+ 00000335  83 F9 01					cmp ecx, 1
+ 00000338  0F 8D FFFFFE84				jge L1
+ 0000033E  7E 58					jng Return
+ 00000340					cardJack:
+ 00000340  BA 0000049D R				mov edx, OFFSET Jack
+ 00000345  E8 00000000 E				call WriteString
+ 0000034A  49						dec ecx 
+ 0000034B  83 F9 01					cmp ecx, 1
+ 0000034E  0F 8D FFFFFE6E				jge L1
+ 00000354  7E 42					jng Return
+ 00000356					cardQueen:
+ 00000356  BA 000004F9 R				mov edx, OFFSET Queen
+ 0000035B  E8 00000000 E				call WriteString
+ 00000360  49						dec ecx 
+ 00000361  83 F9 01					cmp ecx, 1
+ 00000364  0F 8D FFFFFE58				jge L1
+ 0000036A  7E 2C					jng Return
+ 0000036C					cardKing:
+ 0000036C  BA 00000555 R				mov edx, OFFSET King
+ 00000371  E8 00000000 E				call WriteString
+ 00000376  49						dec ecx 
+ 00000377  83 F9 01					cmp ecx, 1
+ 0000037A  0F 8D FFFFFE42				jge L1
+ 00000380  7E 16					jng Return
+ 00000382					cardAce:
+ 00000382  BA 00000105 R				mov edx, OFFSET Ace
+ 00000387  E8 00000000 E				call WriteString
+ 0000038C  49						dec ecx 
+ 0000038D  83 F9 01					cmp ecx, 1
+ 00000390  0F 8D FFFFFE2C				jge L1
+ 00000396  7E 00					jng Return
+ 00000398				Return:	;end of drawing all cards in hand
+ 00000398  E8 00000000 E			call CRLF
+ 0000039D  C3					ret
+ 0000039E			displayDealerHand endp
+
+ 0000039E			addCardPlayer proc
+ 0000039E  B8 0000000C			mov eax, 12 ;get range for RandomRange 
+ 000003A3  E8 00000000 E		call RandomRange
+ 000003A8  83 C0 02			add eax, 2 ;get range 2-14
+ 000003AB  0F B6 1D			movzx ebx, cardsInPlayerHand ;counter for cards in hand
+	   0000000E R
+ 000003B2  88 83 00000000 R		mov [playerHand + ebx], al ;create new value in next empty space in playerHand
+ 000003B8  43				inc ebx
+ 000003B9  88 1D 0000000E R		mov cardsInPlayerHand, bl ;update card counter 
+ 000003BF  C3				ret
+ 000003C0			addCardPlayer endp
+
+ 000003C0			addCardDealer proc
+ 000003C0  B8 0000000C			mov eax, 12 ;get range for RandomRange 
+ 000003C5  E8 00000000 E		call RandomRange
+ 000003CA  83 C0 02			add eax, 2 ;get range 2-14
+ 000003CD  0F B6 1D			movzx ebx, cardsInDealerHand ;counter for cards in hand
+	   00000034 R
+ 000003D4  88 83 00000025 R		mov [dealerHand + ebx], al ;create new value in next empty space in dealer hand
+ 000003DA  43				inc ebx
+ 000003DB  88 1D 00000034 R		mov cardsInDealerHand, bl ;update card counter 
+ 000003E1  C3				ret
+ 000003E2			addCardDealer endp
+
+ 000003E2			dealing proc
+ 000003E2  BA 00000035 R		mov edx, OFFSET dealerHandIndicator
+ 000003E7  E8 00000000 E		call WriteString ;Title hand
+ 000003EC  E8 FFFFFFCF			call addCardDealer ;deal one card to dealer
+ 000003F1  E8 FFFFFFCA			call addCardDealer ;deal one card to dealer
+ 000003F6  E8 FFFFFDC1			call displayDealerHand ;display dealer hand
+ 000003FB  BA 0000000F R		mov edx, OFFSET playerHandIndicator
+ 00000400  E8 00000000 E		call WriteString ;Title hand
+ 00000405  E8 FFFFFF94			call addCardPlayer ;deal one card to player
+ 0000040A  E8 FFFFFF8F			call addCardPlayer ;deal one card to player
+ 0000040F  E8 FFFFFBEC			call displayPlayerHand ;show player their hand
+ 00000414  C3				ret
+ 00000415			dealing endp
+
+ 00000415			getUserInput proc
+ 00000415  BA 00000050 R		mov edx, OFFSET whatToDo ;display instructions for player
+ 0000041A  E8 00000000 E		call WriteString
+ 0000041F  BA 000000A1 R		mov edx, OFFSET input ;load buffer parameter
+ 00000424  B9 00000005			mov ecx, SIZEOF input ;load max character parameter
+ 00000429  E8 00000000 E		call ReadString ; call Irvine procedure user input stored in 'input'
+
+ 0000042E  BA 000000A1 R		mov edx, OFFSET input
+ 00000433  BB 000000A6 R		mov ebx, OFFSET hitTest
+ 00000438  E8 00000000 E		call Str_compare
+ 0000043D  73 0F			jnc stay
+ 0000043F  B8 00000004			mov eax, 4
+
+ 00000444  E8 FFFFFF55			call addCardPlayer
+ 00000449  E8 FFFFFBB2			call displayPlayerHand
+
+ 0000044E				stay:
+ 0000044E  E8 FFFFFF6D				call addCardDealer
+ 00000453  E8 FFFFFD64				call displayDealerHand
+ 00000458  C3					ret
+
+
+
+					
+ 00000459			getUserInput endp
+					
+
+ 00000459			main proc
+ 00000459  E8 00000000 E		call Randomize ;seed RNG for program
+ 0000045E  E8 FFFFFF7F			call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
+
 
 					exit
- 000001DB  6A 00	   *	    push   +000000000h
- 000001DD  E8 00000000 E   *	    call   ExitProcess
- 000001E2			main endp
+ 00000463  6A 00	   *	    push   +000000000h
+ 00000465  E8 00000000 E   *	    call   ExitProcess
+ 0000046A			main endp
 				end main
-Microsoft (R) Macro Assembler Version 14.10.25019.0	    11/30/17 12:46:30
+Microsoft (R) Macro Assembler Version 14.10.25019.0	    11/30/17 14:10:31
 Main.asm						     Symbols 2 - 1
 
 
@@ -611,8 +886,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 000004BA Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000001E2 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000005B1 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000046A Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -719,7 +994,28 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-displayHand  . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000001BC Public STDCALL
+addCardDealer  . . . . . . . . .	P Near	 000003C0 _TEXT	Length= 00000022 Public STDCALL
+addCardPlayer  . . . . . . . . .	P Near	 0000039E _TEXT	Length= 00000022 Public STDCALL
+dealing  . . . . . . . . . . . .	P Near	 000003E2 _TEXT	Length= 00000033 Public STDCALL
+displayDealerHand  . . . . . . .	P Near	 000001BC _TEXT	Length= 000001E2 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 000001C2 _TEXT	
+  emptyCard  . . . . . . . . . .	L Near	 00000238 _TEXT	
+  backCard . . . . . . . . . . .	L Near	 00000244 _TEXT	
+  cardTwo  . . . . . . . . . . .	L Near	 0000025E _TEXT	
+  cardThree  . . . . . . . . . .	L Near	 00000278 _TEXT	
+  cardFour . . . . . . . . . . .	L Near	 00000292 _TEXT	
+  cardFive . . . . . . . . . . .	L Near	 000002AC _TEXT	
+  cardSix  . . . . . . . . . . .	L Near	 000002C6 _TEXT	
+  cardSeven  . . . . . . . . . .	L Near	 000002E0 _TEXT	
+  cardEight  . . . . . . . . . .	L Near	 000002FA _TEXT	
+  cardNine . . . . . . . . . . .	L Near	 00000314 _TEXT	
+  cardTen  . . . . . . . . . . .	L Near	 0000032A _TEXT	
+  cardJack . . . . . . . . . . .	L Near	 00000340 _TEXT	
+  cardQueen  . . . . . . . . . .	L Near	 00000356 _TEXT	
+  cardKing . . . . . . . . . . .	L Near	 0000036C _TEXT	
+  cardAce  . . . . . . . . . . .	L Near	 00000382 _TEXT	
+  Return . . . . . . . . . . . .	L Near	 00000398 _TEXT	
+displayPlayerHand  . . . . . . .	P Near	 00000000 _TEXT	Length= 000001BC Public STDCALL
   L1 . . . . . . . . . . . . . .	L Near	 00000006 _TEXT	
   emptyCard  . . . . . . . . . .	L Near	 00000070 _TEXT	
   cardTwo  . . . . . . . . . . .	L Near	 0000007C _TEXT	
@@ -736,8 +1032,9 @@ displayHand  . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000001BC Public 
   cardKing . . . . . . . . . . .	L Near	 0000018A _TEXT	
   cardAce  . . . . . . . . . . .	L Near	 000001A0 _TEXT	
   Return . . . . . . . . . . . .	L Near	 000001B6 _TEXT	
-main . . . . . . . . . . . . . .	P Near	 000001BC _TEXT	Length= 00000026 Public STDCALL
-  fillHand . . . . . . . . . . .	L Near	 000001C8 _TEXT	
+getUserInput . . . . . . . . . .	P Near	 00000415 _TEXT	Length= 00000044 Public STDCALL
+  stay . . . . . . . . . . . . .	L Near	 0000044E _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000459 _TEXT	Length= 00000011 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -757,7 +1054,8 @@ Symbols:
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
 ALT_MASK . . . . . . . . . . . .	Number	 00000003h   
-Ace  . . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+Ace  . . . . . . . . . . . . . .	Byte	 00000105 _DATA	
+Back . . . . . . . . . . . . . .	Byte	 000000A9 _DATA	
 CAPSLOCK_ON  . . . . . . . . . .	Number	 00000080h   
 CREATE_ALWAYS  . . . . . . . . .	Number	 00000002h   
 CREATE_NEW . . . . . . . . . . .	Number	 00000001h   
@@ -772,7 +1070,7 @@ ENABLE_PROCESSED_OUTPUT  . . . .	Number	 00000001h
 ENABLE_WINDOW_INPUT  . . . . . .	Number	 00000008h   
 ENABLE_WRAP_AT_EOL_OUTPUT  . . .	Number	 00000002h   
 ENHANCED_KEY . . . . . . . . . .	Number	 00000100h   
-Eight  . . . . . . . . . . . . .	Byte	 00000292 _DATA	
+Eight  . . . . . . . . . . . . .	Byte	 00000389 _DATA	
 FALSE  . . . . . . . . . . . . .	Number	 00000000h   
 FILE_APPEND_DATA . . . . . . . .	Number	 00000004h   
 FILE_ATTRIBUTE_ARCHIVE . . . . .	Number	 00000020h   
@@ -801,9 +1099,9 @@ FILE_WRITE_DATA  . . . . . . . .	Number	 00000002h
 FOCUS_EVENT  . . . . . . . . . .	Number	 00000010h   
 FORMAT_MESSAGE_ALLOCATE_BUFFER .	Number	 00000100h   
 FORMAT_MESSAGE_FROM_SYSTEM . . .	Number	 00001000h   
-Five . . . . . . . . . . . . . .	Byte	 0000017E _DATA	
+Five . . . . . . . . . . . . . .	Byte	 00000275 _DATA	
 FormatMessage  . . . . . . . . .	Text   	 FormatMessageA
-Four . . . . . . . . . . . . . .	Byte	 00000122 _DATA	
+Four . . . . . . . . . . . . . .	Byte	 00000219 _DATA	
 GENERIC_ALL  . . . . . . . . . .	Number	 10000000h   
 GENERIC_EXECUTE  . . . . . . . .	Number	 20000000h   
 GENERIC_READ . . . . . . . . . .	Number	 -80000000h   
@@ -828,11 +1126,11 @@ IDTIMEOUT  . . . . . . . . . . .	Number	 00007D00h
 IDTRYAGAIN . . . . . . . . . . .	Number	 0000000Ah   
 IDYES  . . . . . . . . . . . . .	Number	 00000006h   
 INVALID_HANDLE_VALUE . . . . . .	Number	 -00000001h   
-Jack . . . . . . . . . . . . . .	Byte	 000003A6 _DATA	
+Jack . . . . . . . . . . . . . .	Byte	 0000049D _DATA	
 KBDOWN_FLAG  . . . . . . . . . .	Number	 00000001h   
 KEY_EVENT  . . . . . . . . . . .	Number	 00000001h   
 KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
-King . . . . . . . . . . . . . .	Byte	 0000045E _DATA	
+King . . . . . . . . . . . . . .	Byte	 00000555 _DATA	
 LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
 LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
 MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
@@ -864,11 +1162,11 @@ MOUSE_EVENT  . . . . . . . . . .	Number	 00000002h
 MessageBox . . . . . . . . . . .	Text   	 MessageBoxA
 NULL . . . . . . . . . . . . . .	Number	 00000000h   
 NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
-Nine . . . . . . . . . . . . . .	Byte	 000002EE _DATA	
+Nine . . . . . . . . . . . . . .	Byte	 000003E5 _DATA	
 OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
 OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
-Queen  . . . . . . . . . . . . .	Byte	 00000402 _DATA	
+Queen  . . . . . . . . . . . . .	Byte	 000004F9 _DATA	
 RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
 RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
 ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
@@ -880,14 +1178,14 @@ STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch
 STD_INPUT_HANDLE . . . . . . . .	Number	 -0000000Ah   
 STD_OUTPUT_HANDLE  . . . . . . .	Number	 -0000000Bh   
 SetConsoleTitle  . . . . . . . .	Text   	 SetConsoleTitleA
-Seven  . . . . . . . . . . . . .	Byte	 00000236 _DATA	
-Six  . . . . . . . . . . . . . .	Byte	 000001DA _DATA	
+Seven  . . . . . . . . . . . . .	Byte	 0000032D _DATA	
+Six  . . . . . . . . . . . . . .	Byte	 000002D1 _DATA	
 TAB  . . . . . . . . . . . . . .	Number	 00000009h   
 TRUE . . . . . . . . . . . . . .	Number	 00000001h   
 TRUNCATE_EXISTING  . . . . . . .	Number	 00000005h   
-Ten  . . . . . . . . . . . . . .	Byte	 0000034A _DATA	
-Three  . . . . . . . . . . . . .	Byte	 000000C6 _DATA	
-Two  . . . . . . . . . . . . . .	Byte	 0000006A _DATA	
+Ten  . . . . . . . . . . . . . .	Byte	 00000441 _DATA	
+Three  . . . . . . . . . . . . .	Byte	 000001BD _DATA	
+Two  . . . . . . . . . . . . . .	Byte	 00000161 _DATA	
 VK_11  . . . . . . . . . . . . .	Number	 000000BDh   
 VK_12  . . . . . . . . . . . . .	Number	 000000BBh   
 VK_ADD . . . . . . . . . . . . .	Number	 0000006Bh   
@@ -972,10 +1270,16 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
+cardsInDealerHand  . . . . . . .	Byte	 00000034 _DATA	
+cardsInPlayerHand  . . . . . . .	Byte	 0000000E _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
+dealerHandIndicator  . . . . . .	Byte	 00000035 _DATA	
+dealerHand . . . . . . . . . . .	Byte	 00000025 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
+hitTest  . . . . . . . . . . . .	Byte	 000000A6 _DATA	
+input  . . . . . . . . . . . . .	Byte	 000000A1 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -983,8 +1287,10 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
+playerHandIndicator  . . . . . .	Byte	 0000000F _DATA	
 playerHand . . . . . . . . . . .	Byte	 00000000 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
+whatToDo . . . . . . . . . . . .	Byte	 00000050 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
