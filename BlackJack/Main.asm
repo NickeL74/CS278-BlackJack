@@ -9,21 +9,27 @@ playerHand BYTE 14 DUP(?)
 cardsInPlayerHand BYTE 0
 sumOfPlayerHand DWORD 0
 stayValue BYTE 0
+playerBust DWORD 0
+player21 DWORD 0
 playerHandIndicator BYTE "------Your Hand-----", 0ah, "sum:", 0h
 
 ;dealer hand values
 dealerHand BYTE 14 DUP(?), 1
 cardsInDealerHand BYTE 0
 sumOfDealerHand DWORD 0
+dealerBust DWORD 0
+dealer21 DWORD 0
 dealerHandIndicator BYTE "------Dealer's Hand------", 0ah, 0h
 
 ;End Conditions
 winMessage BYTE "You WIN!!", 0ah, 0h
 loseMessage BYTE "You Lost....", 0ah, "Better luck next time.", 0ah, 0h
+tieMessage BYTE "There is a push.", 0ah, 0h
 
 ;User input values
 whatToDo BYTE "Would you like to hit or stay?", 0ah, "Type 'hit' or 'stay' then press enter to submit.", 0ah, 0h
 input BYTE 5 DUP(?)
+newGame BYTE "Would you like to play again?", 0ah, "Type 'yes' to continue or 'no' to end.", 0ah, 0h
 
 
 
@@ -446,17 +452,30 @@ addCardPlayer proc
 	mov ebx, sumOfPlayerHand ;copy sum to ebx
 	add eax, ebx ;add new card to sum
 	mov sumOfPlayerHand, eax ;move new sum to memory
-	ret
+	jmp checkBust
 
 	faceCard:
 		mov ebx, sumOfPlayerHand
 		add ebx, 10
 		mov sumOfPlayerHand, ebx
+		jmp checkBust
+
+	checkBust:
+		mov eax, 0
+		mov ebx, 1
+		cmp sumOfPlayerHand, 21
+		cmova ax, bx
+		mov playerBust, eax
+		cmove ax, bx
+		mov player21, eax
 		ret
+		
 
 addCardPlayer endp
 
 addCardDealer proc
+	mov eax, 0
+	mov ebx, 0
 	mov eax, 12 ;get range for RandomRange 
 	call RandomRange
 	add eax, 2 ;get range 2-14
@@ -472,12 +491,22 @@ addCardDealer proc
 	mov ebx, sumOfDealerHand ;copy sum to ebx
 	add eax, ebx ;add new card to sum
 	mov sumOfDealerHand, eax ;move new sum to memory
-	ret
+	jmp checkBust
 
 	faceCard:
 		mov ebx, sumOfDealerHand
 		add ebx, 10
 		mov sumOfDealerHand, ebx
+		jmp checkBust
+
+	checkBust:
+		mov eax, 0
+		mov ebx, 1
+		cmp sumOfDealerHand, 21
+		cmova ax, bx
+		mov dealerBust, eax
+		cmove ax, bx
+		mov dealer21, eax
 		ret
 addCardDealer endp
 
@@ -491,7 +520,7 @@ dealing proc
 	ret
 dealing endp
 
-getUserInput proc ;NEEDS WORK
+getUserInput proc 
 	mov edx, OFFSET whatToDo ;display instructions for player
 	call WriteString
 	mov edx, OFFSET input ;load buffer parameter
@@ -502,8 +531,6 @@ getUserInput proc ;NEEDS WORK
 	je hit
 
 	;stay
-	;call addCardDealer ;player stays so give dealer card and display hand
-	;call displayDealerHand
 	mov stayValue, 1
 	ret
 
@@ -516,41 +543,79 @@ getUserInput endp
 	
 
 main proc
+	begin: ;loop for new hand
+
+	;reset values of player hand to 0
+	mov ecx, 14 ;number of values in player hand
+	L1: ;resets all values of playerHand to 0
+		mov [playerHand + ecx], 0
+	loop L1
+	mov playerHand, 0 
+	mov sumOfPlayerHand, 0
+	mov cardsInPlayerHand, 0
+	mov stayValue, 0
+	mov playerBust, 0
+	mov player21, 0
+
+	;reset all values of dealer hand
+	mov ecx, 13 ;skip up side down card
+	L2:
+		mov [dealerHand+ecx], 0
+	loop L2
+	mov dealerHand, 0
+	mov sumOfDealerHand, 0
+	mov cardsInDealerHand, 0
+	mov dealerBust, 0
+	mov dealer21, 0
+
 	call Randomize ;seed RNG for program
 	call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
-	beginwhile:
-		cmp sumOfPlayerHand, 21 ;check if player has 21
-		jge checkWin 
-		cmp stayValue, 1 ;find if player stays
-		je dealerTurn ;allow dealer to go
-		call getUserInput
-		jmp beginwhile ;continue loop
-
-		dealerTurn: ;alloow the dealer to go
-			mov eax, sumOfPlayerHand
-			cmp sumOfDealerHand, eax
-			jg Lose
-			call addCardDealer
-			call displayDealerHand
-			cmp sumOfDealerHand, 21
-			jg Win
-			je Lose
-
-	checkWin:
-		cmp sumOfPlayerHand, 21
-		jne Lose
+	
+	playerRound: ;loop while player has control
+		cmp player21, 1
 		je Win
+		cmp dealer21, 1
+		je Lose
+		call getUserInput
+		cmp stayValue, 1
+		je dealerRound
+		cmp playerBust, 1
+		je Lose
+	jmp playerRound
+
+
+	dealerRound: ;loop while dealer has control
+		;cmp dealer21, 1
+		;je Lose
+		cmp dealerBust, 1
+		je Win
+		mov eax, sumOfDealerHand
+		cmp eax, sumOfPlayerHand
+		je Tie
+		call addCardDealer
+		call displayDealerHand
+		jmp dealerRound
+		
+
 	Win:
 		mov edx, OFFSET winMessage
 		call WriteString
 		jmp endL
-
 	Lose:
 		mov edx, OFFSET loseMessage
 		call WriteString
-
+		jmp endL
+	Tie:
+		mov edx, OFFSET tieMessage
+		call WriteString
 	endL:
-		mov eax, ebx
+		mov edx, OFFSET newGame ;display instructions for player
+		call WriteString
+		mov edx, OFFSET input ;load buffer parameter
+		mov ecx, SIZEOF input ;load max character parameter
+		call ReadString ; call Irvine procedure user input stored in 'input'
+		cmp eax, 3
+		je begin
 	exit
 main endp
 end main
