@@ -1,5 +1,5 @@
-; AddTwo.asm - adds two 32-bit integers.
-; Chapter 3 example
+;BlackJack project
+;Nicholas Little and Steven Schierman
 
 INCLUDE Irvine32.inc
 
@@ -482,27 +482,27 @@ addCardPlayer proc
 		;check if hand sums to 21
 		mov eax, player21 
 		mov ebx, 1
-		cmp sumOfPlayerHand, 21 ;find if hand is over 21
-		cmove eax, ebx
-		mov player21, eax
+		cmp sumOfPlayerHand, 21 ;find if hand is equal to 21
+		cmove eax, ebx 
+		mov player21, eax ;sets player21 to 1 of sum = 21
 
 		;check if hand is greater than 21
 		mov eax, playerBust
 		mov ebx, 1
-		cmp sumOfPlayerHand, 21
-		cmova eax, ebx
+		cmp sumOfPlayerHand, 21 ;find if hand is greater than 21
+		cmova eax, ebx 
 		cmp eax, 1
-		jne continue
-		cmp playerHighAce, 1
-		jne bust
-		mov playerHighAce, 0
+		jne continue ;hand is less than 21
+		cmp playerHighAce, 1 ;hand has a high ace in it
+		jne bust ;over 21 and no high ace
+		mov playerHighAce, 0 ;reset high ace counter
 		mov eax, sumOfPlayerHand
-		sub eax, 10
+		sub eax, 10 ;make low ace
 		mov sumOfPlayerHand, eax
-		jmp checkBust
+		jmp checkBust ;check if low ace sum is still a bust
 
 		bust:
-			mov playerBust, 1
+			mov playerBust, 1 ;set bust counter
 			ret
 		continue:
 			ret
@@ -557,24 +557,24 @@ addCardDealer proc
 		;check if hand sums to 21
 		mov eax, dealer21 
 		mov ebx, 1
-		cmp sumOfDealerHand, 21 ;find if hand is over 21
+		cmp sumOfDealerHand, 21 ;find if hand is equal to 21
 		cmove eax, ebx
-		mov dealer21, eax
+		mov dealer21, eax ;set 21 counter if hand = 21
 
 		;check if hand is greater than 21
 		mov eax, dealerBust
 		mov ebx, 1
-		cmp sumOfDealerHand, 21
-		cmova eax, ebx
-		cmp eax, 1
-		jne continue
-		cmp dealerHighAce, 1
-		jne bust
-		mov dealerHighAce, 0
-		mov eax, sumOfDealerHand
-		sub eax, 10
+		cmp sumOfDealerHand, 21 ;compare sum of hand and 21
+		cmova eax, ebx ;set eax to one if hand > 21
+		cmp eax, 1  
+		jne continue ;contuine if not > 21
+		cmp dealerHighAce, 1 ;look for ace in hand
+		jne bust ;hand > 21 and no high ace
+		mov dealerHighAce, 0 ;reset high ace counter
+		mov eax, sumOfDealerHand 
+		sub eax, 10 ;make high ace, low ace
 		mov sumOfDealerHand, eax
-		jmp checkBust
+		jmp checkBust; check new value for bust
 
 		bust:
 			mov dealerBust, 1
@@ -606,7 +606,7 @@ getUserInput proc
 	je hit
 
 	;stay
-	mov stayValue, 1
+	mov stayValue, 1 ;set stay counter so player hand is locked in
 	ret
 
 	hit:;hit
@@ -618,21 +618,18 @@ getUserInput endp
 
 endDisplay proc
 	mov al, dealerHand
-	mov [dealerHand + 14], al
-	call displayDealerHand
-	mov edx, OFFSET sumText
+	mov [dealerHand + 14], al ;"flips" upsidedown card
+	call displayDealerHand ;display dealer final hand
+	mov edx, OFFSET sumText 
 	call WriteString
-	mov eax, sumOfDealerHand
+	mov eax, sumOfDealerHand ;display a sum of dealers hand
 	call WriteInt
 	call CrLf
-	call displayPlayerHand
+	call displayPlayerHand ;display player final hand
 	ret
 endDisplay endp
-	
 
-main proc
-	begin: ;loop for new hand
-
+resetValues proc
 	;reset values of player hand to 0
 	mov ecx, 14 ;number of values in player hand
 	L1: ;resets all values of playerHand to 0
@@ -659,18 +656,25 @@ main proc
 	mov dealer21, 0
 	mov dealerHighAce, 0
 
+	ret
+resetValues endp
+
+main proc
+	begin: ;loop for new hand
+	call resetValues ;resets all game values
+
 	call Randomize ;seed RNG for program
 	call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
 	
 	playerRound: ;loop while player has control
-		cmp player21, 1
+		cmp player21, 1 ;check if player has 21
 		je Win
-		cmp dealer21, 1
+		cmp dealer21, 1 ;check if dealer has 21
 		je Lose
-		call getUserInput
-		cmp stayValue, 1
-		je dealerRound
-		cmp playerBust, 1
+		call getUserInput ;allow player to hit or stay
+		cmp stayValue, 1 ;comapre if player stays
+		je dealerRound ; if player stays dealer goes
+		cmp playerBust, 1 ;if player busts player loses
 		je Lose
 	jmp playerRound
 
