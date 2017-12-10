@@ -445,6 +445,8 @@ addCardPlayer proc
 	inc ebx
 	mov cardsInPlayerHand, bl ;update card counter
 
+	cmp eax, 14 ;compare to ace card
+	je aceDealt
 	cmp eax, 10 ;compare to determine if facecard
 	jg faceCard
 
@@ -460,14 +462,32 @@ addCardPlayer proc
 		mov sumOfPlayerHand, ebx
 		jmp checkBust
 
+	aceDealt:
+		cmp sumOfPlayerHand, 10 ;determine if high ace or low ace needed
+		jg lowAce
+		mov ebx, sumOfPlayerHand
+		add ebx, 11 ;high ace value
+		mov sumOfPlayerHand, ebx
+		jmp checkBust
+
+		lowAce:
+			mov ebx, sumOfPlayerHand
+			add ebx, 1
+			mov sumOfPlayerHand, ebx
+			jmp checkBust
+
 	checkBust:
-		mov eax, 0
+		mov eax, player21
+		mov ebx, 1
+		cmp sumOfPlayerHand, 21 ;find if hand is over 21
+		cmove eax, ebx
+		mov player21, eax
+
+		mov eax, playerBust
 		mov ebx, 1
 		cmp sumOfPlayerHand, 21
-		cmova ax, bx
+		cmova eax, ebx
 		mov playerBust, eax
-		cmove ax, bx
-		mov player21, eax
 		ret
 		
 
@@ -484,6 +504,9 @@ addCardDealer proc
 	inc ebx
 	mov cardsInDealerHand, bl ;update card counter
 
+	cmp eax, 14 ;compare to ace card
+	je aceDealt
+
 	cmp eax, 10 ;compare to determine if facecard
 	jg faceCard
 
@@ -499,14 +522,33 @@ addCardDealer proc
 		mov sumOfDealerHand, ebx
 		jmp checkBust
 
+	aceDealt:
+		cmp sumOfDealerHand, 10 ;determine if high ace or low ace needed
+		jg lowAce
+		mov ebx, sumOfDealerHand
+		add ebx, 11 ;high ace value
+		mov sumOfDealerHand, ebx
+		jmp checkBust
+
+		lowAce:
+			mov ebx, sumOfDealerHand
+			add ebx, 1
+			mov sumOfDealerHand, ebx
+			jmp checkBust
+
 	checkBust:
-		mov eax, 0
+		mov eax, dealer21
+		mov ebx, 1
+		cmp sumOfDealerHand, 21 ;find if hand is over 21
+		cmove eax, ebx
+		mov dealer21, eax
+
+		mov eax, dealerBust
 		mov ebx, 1
 		cmp sumOfDealerHand, 21
-		cmova ax, bx
+		cmova eax, ebx
 		mov dealerBust, eax
-		cmove ax, bx
-		mov dealer21, eax
+		
 		ret
 addCardDealer endp
 
@@ -585,13 +627,15 @@ main proc
 
 
 	dealerRound: ;loop while dealer has control
-		;cmp dealer21, 1
-		;je Lose
+		cmp dealer21, 1
+		je Lose
 		cmp dealerBust, 1
 		je Win
 		mov eax, sumOfDealerHand
 		cmp eax, sumOfPlayerHand
-		je Tie
+		je Tie ;dealerHand = playerHand
+		jg Lose ;dealerHand > playerHand
+		;dealerHand < playerHand
 		call addCardDealer
 		call displayDealerHand
 		jmp dealerRound

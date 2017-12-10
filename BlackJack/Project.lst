@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.10.25019.0	    12/07/17 14:09:10
+Microsoft (R) Macro Assembler Version 14.11.25508.2	    12/10/17 12:51:14
 Main.asm						     Page 1 - 1
 
 
@@ -776,202 +776,254 @@ Main.asm						     Page 1 - 1
  000003EA  43				inc ebx
  000003EB  88 1D 0000000E R		mov cardsInPlayerHand, bl ;update card counter
 
- 000003F1  83 F8 0A			cmp eax, 10 ;compare to determine if facecard
- 000003F4  7F 0F			jg faceCard
+ 000003F1  83 F8 0E			cmp eax, 14 ;compare to ace card
+ 000003F4  74 25			je aceDealt
+ 000003F6  83 F8 0A			cmp eax, 10 ;compare to determine if facecard
+ 000003F9  7F 0F			jg faceCard
 
 					;numbered cards
- 000003F6  8B 1D 0000000F R		mov ebx, sumOfPlayerHand ;copy sum to ebx
- 000003FC  03 C3			add eax, ebx ;add new card to sum
- 000003FE  A3 0000000F R		mov sumOfPlayerHand, eax ;move new sum to memory
- 00000403  EB 11			jmp checkBust
+ 000003FB  8B 1D 0000000F R		mov ebx, sumOfPlayerHand ;copy sum to ebx
+ 00000401  03 C3			add eax, ebx ;add new card to sum
+ 00000403  A3 0000000F R		mov sumOfPlayerHand, eax ;move new sum to memory
+ 00000408  EB 3C			jmp checkBust
 
- 00000405				faceCard:
- 00000405  8B 1D 0000000F R			mov ebx, sumOfPlayerHand
- 0000040B  83 C3 0A				add ebx, 10
- 0000040E  89 1D 0000000F R			mov sumOfPlayerHand, ebx
- 00000414  EB 00				jmp checkBust
+ 0000040A				faceCard:
+ 0000040A  8B 1D 0000000F R			mov ebx, sumOfPlayerHand
+ 00000410  83 C3 0A				add ebx, 10
+ 00000413  89 1D 0000000F R			mov sumOfPlayerHand, ebx
+ 00000419  EB 2B				jmp checkBust
 
- 00000416				checkBust:
- 00000416  B8 00000000				mov eax, 0
- 0000041B  BB 00000001				mov ebx, 1
- 00000420  83 3D 0000000F R			cmp sumOfPlayerHand, 21
+ 0000041B				aceDealt:
+ 0000041B  83 3D 0000000F R			cmp sumOfPlayerHand, 10 ;determine if high ace or low ace needed
+	   0A
+ 00000422  7F 11				jg lowAce
+ 00000424  8B 1D 0000000F R			mov ebx, sumOfPlayerHand
+ 0000042A  83 C3 0B				add ebx, 11 ;high ace value
+ 0000042D  89 1D 0000000F R			mov sumOfPlayerHand, ebx
+ 00000433  EB 11				jmp checkBust
+
+ 00000435					lowAce:
+ 00000435  8B 1D 0000000F R				mov ebx, sumOfPlayerHand
+ 0000043B  83 C3 01					add ebx, 1
+ 0000043E  89 1D 0000000F R				mov sumOfPlayerHand, ebx
+ 00000444  EB 00					jmp checkBust
+
+ 00000446				checkBust:
+ 00000446  A1 00000018 R			mov eax, player21
+ 0000044B  BB 00000001				mov ebx, 1
+ 00000450  83 3D 0000000F R			cmp sumOfPlayerHand, 21 ;find if hand is over 21
 	   15
- 00000427  66| 0F 47 C3				cmova ax, bx
- 0000042B  A3 00000014 R			mov playerBust, eax
- 00000430  66| 0F 44 C3				cmove ax, bx
- 00000434  A3 00000018 R			mov player21, eax
- 00000439  C3					ret
+ 00000457  0F 44 C3				cmove eax, ebx
+ 0000045A  A3 00000018 R			mov player21, eax
+
+ 0000045F  A1 00000014 R			mov eax, playerBust
+ 00000464  BB 00000001				mov ebx, 1
+ 00000469  83 3D 0000000F R			cmp sumOfPlayerHand, 21
+	   15
+ 00000470  0F 47 C3				cmova eax, ebx
+ 00000473  A3 00000014 R			mov playerBust, eax
+ 00000478  C3					ret
 						
 
- 0000043A			addCardPlayer endp
+ 00000479			addCardPlayer endp
 
- 0000043A			addCardDealer proc
- 0000043A  B8 00000000			mov eax, 0
- 0000043F  BB 00000000			mov ebx, 0
- 00000444  B8 0000000C			mov eax, 12 ;get range for RandomRange 
- 00000449  E8 00000000 E		call RandomRange
- 0000044E  83 C0 02			add eax, 2 ;get range 2-14
- 00000451  0F B6 1D			movzx ebx, cardsInDealerHand ;counter for cards in hand
+ 00000479			addCardDealer proc
+ 00000479  B8 00000000			mov eax, 0
+ 0000047E  BB 00000000			mov ebx, 0
+ 00000483  B8 0000000C			mov eax, 12 ;get range for RandomRange 
+ 00000488  E8 00000000 E		call RandomRange
+ 0000048D  83 C0 02			add eax, 2 ;get range 2-14
+ 00000490  0F B6 1D			movzx ebx, cardsInDealerHand ;counter for cards in hand
 	   00000045 R
- 00000458  88 83 00000036 R		mov [dealerHand + ebx], al ;create new value in next empty space in dealer hand
- 0000045E  43				inc ebx
- 0000045F  88 1D 00000045 R		mov cardsInDealerHand, bl ;update card counter
+ 00000497  88 83 00000036 R		mov [dealerHand + ebx], al ;create new value in next empty space in dealer hand
+ 0000049D  43				inc ebx
+ 0000049E  88 1D 00000045 R		mov cardsInDealerHand, bl ;update card counter
 
- 00000465  83 F8 0A			cmp eax, 10 ;compare to determine if facecard
- 00000468  7F 0F			jg faceCard
+ 000004A4  83 F8 0E			cmp eax, 14 ;compare to ace card
+ 000004A7  74 25			je aceDealt
+
+ 000004A9  83 F8 0A			cmp eax, 10 ;compare to determine if facecard
+ 000004AC  7F 0F			jg faceCard
 
 					;numbered cards
- 0000046A  8B 1D 00000046 R		mov ebx, sumOfDealerHand ;copy sum to ebx
- 00000470  03 C3			add eax, ebx ;add new card to sum
- 00000472  A3 00000046 R		mov sumOfDealerHand, eax ;move new sum to memory
- 00000477  EB 11			jmp checkBust
+ 000004AE  8B 1D 00000046 R		mov ebx, sumOfDealerHand ;copy sum to ebx
+ 000004B4  03 C3			add eax, ebx ;add new card to sum
+ 000004B6  A3 00000046 R		mov sumOfDealerHand, eax ;move new sum to memory
+ 000004BB  EB 3C			jmp checkBust
 
- 00000479				faceCard:
- 00000479  8B 1D 00000046 R			mov ebx, sumOfDealerHand
- 0000047F  83 C3 0A				add ebx, 10
- 00000482  89 1D 00000046 R			mov sumOfDealerHand, ebx
- 00000488  EB 00				jmp checkBust
+ 000004BD				faceCard:
+ 000004BD  8B 1D 00000046 R			mov ebx, sumOfDealerHand
+ 000004C3  83 C3 0A				add ebx, 10
+ 000004C6  89 1D 00000046 R			mov sumOfDealerHand, ebx
+ 000004CC  EB 2B				jmp checkBust
 
- 0000048A				checkBust:
- 0000048A  B8 00000000				mov eax, 0
- 0000048F  BB 00000001				mov ebx, 1
- 00000494  83 3D 00000046 R			cmp sumOfDealerHand, 21
+ 000004CE				aceDealt:
+ 000004CE  83 3D 00000046 R			cmp sumOfDealerHand, 10 ;determine if high ace or low ace needed
+	   0A
+ 000004D5  7F 11				jg lowAce
+ 000004D7  8B 1D 00000046 R			mov ebx, sumOfDealerHand
+ 000004DD  83 C3 0B				add ebx, 11 ;high ace value
+ 000004E0  89 1D 00000046 R			mov sumOfDealerHand, ebx
+ 000004E6  EB 11				jmp checkBust
+
+ 000004E8					lowAce:
+ 000004E8  8B 1D 00000046 R				mov ebx, sumOfDealerHand
+ 000004EE  83 C3 01					add ebx, 1
+ 000004F1  89 1D 00000046 R				mov sumOfDealerHand, ebx
+ 000004F7  EB 00					jmp checkBust
+
+ 000004F9				checkBust:
+ 000004F9  A1 0000004E R			mov eax, dealer21
+ 000004FE  BB 00000001				mov ebx, 1
+ 00000503  83 3D 00000046 R			cmp sumOfDealerHand, 21 ;find if hand is over 21
 	   15
- 0000049B  66| 0F 47 C3				cmova ax, bx
- 0000049F  A3 0000004A R			mov dealerBust, eax
- 000004A4  66| 0F 44 C3				cmove ax, bx
- 000004A8  A3 0000004E R			mov dealer21, eax
- 000004AD  C3					ret
- 000004AE			addCardDealer endp
+ 0000050A  0F 44 C3				cmove eax, ebx
+ 0000050D  A3 0000004E R			mov dealer21, eax
 
- 000004AE			dealing proc
- 000004AE  E8 FFFFFF87			call addCardDealer ;deal one card to dealer
- 000004B3  E8 FFFFFF82			call addCardDealer ;deal one card to dealer
- 000004B8  E8 FFFFFD18			call displayDealerHand ;display dealer hand
- 000004BD  E8 FFFFFF0E			call addCardPlayer ;deal one card to player
- 000004C2  E8 FFFFFF09			call addCardPlayer ;deal one card to player
- 000004C7  E8 FFFFFB34			call displayPlayerHand ;show player their hand
- 000004CC  C3				ret
- 000004CD			dealing endp
+ 00000512  A1 0000004A R			mov eax, dealerBust
+ 00000517  BB 00000001				mov ebx, 1
+ 0000051C  83 3D 00000046 R			cmp sumOfDealerHand, 21
+	   15
+ 00000523  0F 47 C3				cmova eax, ebx
+ 00000526  A3 0000004A R			mov dealerBust, eax
+						
+ 0000052B  C3					ret
+ 0000052C			addCardDealer endp
 
- 000004CD			getUserInput proc 
- 000004CD  BA 000000AF R		mov edx, OFFSET whatToDo ;display instructions for player
- 000004D2  E8 00000000 E		call WriteString
- 000004D7  BA 00000100 R		mov edx, OFFSET input ;load buffer parameter
- 000004DC  B9 00000005			mov ecx, SIZEOF input ;load max character parameter
- 000004E1  E8 00000000 E		call ReadString ; call Irvine procedure user input stored in 'input'
+ 0000052C			dealing proc
+ 0000052C  E8 FFFFFF48			call addCardDealer ;deal one card to dealer
+ 00000531  E8 FFFFFF43			call addCardDealer ;deal one card to dealer
+ 00000536  E8 FFFFFC9A			call displayDealerHand ;display dealer hand
+ 0000053B  E8 FFFFFE90			call addCardPlayer ;deal one card to player
+ 00000540  E8 FFFFFE8B			call addCardPlayer ;deal one card to player
+ 00000545  E8 FFFFFAB6			call displayPlayerHand ;show player their hand
+ 0000054A  C3				ret
+ 0000054B			dealing endp
 
- 000004E6  83 F8 03			cmp eax, 3 ;eax contains length of input string compare with 3(hit)
- 000004E9  74 08			je hit
+ 0000054B			getUserInput proc 
+ 0000054B  BA 000000AF R		mov edx, OFFSET whatToDo ;display instructions for player
+ 00000550  E8 00000000 E		call WriteString
+ 00000555  BA 00000100 R		mov edx, OFFSET input ;load buffer parameter
+ 0000055A  B9 00000005			mov ecx, SIZEOF input ;load max character parameter
+ 0000055F  E8 00000000 E		call ReadString ; call Irvine procedure user input stored in 'input'
+
+ 00000564  83 F8 03			cmp eax, 3 ;eax contains length of input string compare with 3(hit)
+ 00000567  74 08			je hit
 
 					;stay
- 000004EB  C6 05 00000013 R		mov stayValue, 1
+ 00000569  C6 05 00000013 R		mov stayValue, 1
 	   01
- 000004F2  C3				ret
+ 00000570  C3				ret
 
- 000004F3				hit:;hit
- 000004F3  E8 FFFFFED8				call addCardPlayer ;player hits so give them card and display hand
- 000004F8  E8 FFFFFB03				call displayPlayerHand
- 000004FD  C3					ret
+ 00000571				hit:;hit
+ 00000571  E8 FFFFFE5A				call addCardPlayer ;player hits so give them card and display hand
+ 00000576  E8 FFFFFA85				call displayPlayerHand
+ 0000057B  C3					ret
 					
- 000004FE			getUserInput endp
+ 0000057C			getUserInput endp
 					
 
- 000004FE			main proc
- 000004FE				begin:
- 000004FE  B9 0000000E			mov ecx, 14
- 00000503				L1:
- 00000503  C6 81 00000000 R			mov [playerHand + ecx], 0
+ 0000057C			main proc
+ 0000057C				begin: ;loop for new hand
+
+					;reset values of player hand to 0
+ 0000057C  B9 0000000E			mov ecx, 14 ;number of values in player hand
+ 00000581				L1: ;resets all values of playerHand to 0
+ 00000581  C6 81 00000000 R			mov [playerHand + ecx], 0
 	   00
- 0000050A  E2 F7			loop L1
- 0000050C  C6 05 00000000 R		mov playerHand, 0
+ 00000588  E2 F7			loop L1
+ 0000058A  C6 05 00000000 R		mov playerHand, 0 
 	   00
- 00000513  C7 05 0000000F R		mov sumOfPlayerHand, 0
+ 00000591  C7 05 0000000F R		mov sumOfPlayerHand, 0
 	   00000000
- 0000051D  C6 05 0000000E R		mov cardsInPlayerHand, 0
+ 0000059B  C6 05 0000000E R		mov cardsInPlayerHand, 0
 	   00
- 00000524  C6 05 00000013 R		mov stayValue, 0
+ 000005A2  C6 05 00000013 R		mov stayValue, 0
 	   00
- 0000052B  C7 05 00000014 R		mov playerBust, 0
+ 000005A9  C7 05 00000014 R		mov playerBust, 0
 	   00000000
- 00000535  C7 05 00000018 R		mov player21, 0
+ 000005B3  C7 05 00000018 R		mov player21, 0
 	   00000000
 
- 0000053F  B9 0000000D			mov ecx, 13
- 00000544				L2:
- 00000544  C6 81 00000036 R			mov [dealerHand+ecx], 0
+					;reset all values of dealer hand
+ 000005BD  B9 0000000D			mov ecx, 13 ;skip up side down card
+ 000005C2				L2:
+ 000005C2  C6 81 00000036 R			mov [dealerHand+ecx], 0
 	   00
- 0000054B  E2 F7			loop L2
- 0000054D  C6 05 00000036 R		mov dealerHand, 0
+ 000005C9  E2 F7			loop L2
+ 000005CB  C6 05 00000036 R		mov dealerHand, 0
 	   00
- 00000554  C7 05 00000046 R		mov sumOfDealerHand, 0
+ 000005D2  C7 05 00000046 R		mov sumOfDealerHand, 0
 	   00000000
- 0000055E  C6 05 00000045 R		mov cardsInDealerHand, 0
+ 000005DC  C6 05 00000045 R		mov cardsInDealerHand, 0
 	   00
- 00000565  C7 05 0000004A R		mov dealerBust, 0
+ 000005E3  C7 05 0000004A R		mov dealerBust, 0
 	   00000000
- 0000056F  C7 05 0000004E R		mov dealer21, 0
+ 000005ED  C7 05 0000004E R		mov dealer21, 0
 	   00000000
 
- 00000579  E8 00000000 E		call Randomize ;seed RNG for program
- 0000057E  E8 FFFFFF2B			call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
+ 000005F7  E8 00000000 E		call Randomize ;seed RNG for program
+ 000005FC  E8 FFFFFF2B			call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
 					
- 00000583				playerRound:
- 00000583  83 3D 00000018 R			cmp player21, 1
+ 00000601				playerRound: ;loop while player has control
+ 00000601  83 3D 00000018 R			cmp player21, 1
 	   01
- 0000058A  74 44				je Win
- 0000058C  83 3D 0000004E R			cmp dealer21, 1
+ 00000608  74 4F				je Win
+ 0000060A  83 3D 0000004E R			cmp dealer21, 1
 	   01
- 00000593  74 47				je Lose
- 00000595  E8 FFFFFF33				call getUserInput
- 0000059A  80 3D 00000013 R			cmp stayValue, 1
+ 00000611  74 52				je Lose
+ 00000613  E8 FFFFFF33				call getUserInput
+ 00000618  80 3D 00000013 R			cmp stayValue, 1
 	   01
- 000005A1  74 0B				je dealerRound
- 000005A3  83 3D 00000014 R			cmp playerBust, 1
+ 0000061F  74 0B				je dealerRound
+ 00000621  83 3D 00000014 R			cmp playerBust, 1
 	   01
- 000005AA  74 30				je Lose
- 000005AC  EB D5			jmp playerRound
+ 00000628  74 3B				je Lose
+ 0000062A  EB D5			jmp playerRound
 
 
- 000005AE				dealerRound:
-						;cmp dealer21, 1
-						;je Lose
- 000005AE  83 3D 0000004A R			cmp dealerBust, 1
+ 0000062C				dealerRound: ;loop while dealer has control
+ 0000062C  83 3D 0000004E R			cmp dealer21, 1
 	   01
- 000005B5  74 19				je Win
- 000005B7  A1 00000046 R			mov eax, sumOfDealerHand
- 000005BC  3B 05 0000000F R			cmp eax, sumOfPlayerHand
- 000005C2  74 24				je Tie
- 000005C4  E8 FFFFFE71				call addCardDealer
- 000005C9  E8 FFFFFC07				call displayDealerHand
- 000005CE  EB DE				jmp dealerRound
+ 00000633  74 30				je Lose
+ 00000635  83 3D 0000004A R			cmp dealerBust, 1
+	   01
+ 0000063C  74 1B				je Win
+ 0000063E  A1 00000046 R			mov eax, sumOfDealerHand
+ 00000643  3B 05 0000000F R			cmp eax, sumOfPlayerHand
+ 00000649  74 26				je Tie ;dealerHand = playerHand
+ 0000064B  7F 18				jg Lose ;dealerHand > playerHand
+						;dealerHand < playerHand
+ 0000064D  E8 FFFFFE27				call addCardDealer
+ 00000652  E8 FFFFFB7E				call displayDealerHand
+ 00000657  EB D3				jmp dealerRound
 						
 
- 000005D0				Win:
- 000005D0  BA 0000006D R			mov edx, OFFSET winMessage
- 000005D5  E8 00000000 E			call WriteString
- 000005DA  EB 16				jmp endL
- 000005DC				Lose:
- 000005DC  BA 00000078 R			mov edx, OFFSET loseMessage
- 000005E1  E8 00000000 E			call WriteString
- 000005E6  EB 0A				jmp endL
- 000005E8				Tie:
- 000005E8  BA 0000009D R			mov edx, OFFSET tieMessage
- 000005ED  E8 00000000 E			call WriteString
- 000005F2				endL:
- 000005F2  BA 00000105 R			mov edx, OFFSET newGame ;display instructions for player
- 000005F7  E8 00000000 E			call WriteString
- 000005FC  BA 00000100 R			mov edx, OFFSET input ;load buffer parameter
- 00000601  B9 00000005				mov ecx, SIZEOF input ;load max character parameter
- 00000606  E8 00000000 E			call ReadString ; call Irvine procedure user input stored in 'input'
- 0000060B  83 F8 03				cmp eax, 3
- 0000060E  0F 84 FFFFFEEA			je begin
+ 00000659				Win:
+ 00000659  BA 0000006D R			mov edx, OFFSET winMessage
+ 0000065E  E8 00000000 E			call WriteString
+ 00000663  EB 16				jmp endL
+ 00000665				Lose:
+ 00000665  BA 00000078 R			mov edx, OFFSET loseMessage
+ 0000066A  E8 00000000 E			call WriteString
+ 0000066F  EB 0A				jmp endL
+ 00000671				Tie:
+ 00000671  BA 0000009D R			mov edx, OFFSET tieMessage
+ 00000676  E8 00000000 E			call WriteString
+ 0000067B				endL:
+ 0000067B  BA 00000105 R			mov edx, OFFSET newGame ;display instructions for player
+ 00000680  E8 00000000 E			call WriteString
+ 00000685  BA 00000100 R			mov edx, OFFSET input ;load buffer parameter
+ 0000068A  B9 00000005				mov ecx, SIZEOF input ;load max character parameter
+ 0000068F  E8 00000000 E			call ReadString ; call Irvine procedure user input stored in 'input'
+ 00000694  83 F8 03				cmp eax, 3
+ 00000697  0F 84 FFFFFEDF			je begin
 					exit
- 00000614  6A 00	   *	    push   +000000000h
- 00000616  E8 00000000 E   *	    call   ExitProcess
- 0000061B			main endp
+ 0000069D  6A 00	   *	    push   +000000000h
+ 0000069F  E8 00000000 E   *	    call   ExitProcess
+ 000006A4			main endp
 				end main
-Microsoft (R) Macro Assembler Version 14.10.25019.0	    12/07/17 14:09:10
+Microsoft (R) Macro Assembler Version 14.11.25508.2	    12/10/17 12:51:14
 Main.asm						     Symbols 2 - 1
 
 
@@ -1066,7 +1118,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000653 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000061B Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000006A4 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -1173,13 +1225,17 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-addCardDealer  . . . . . . . . .	P Near	 0000043A _TEXT	Length= 00000074 Public STDCALL
-  faceCard . . . . . . . . . . .	L Near	 00000479 _TEXT	
-  checkBust  . . . . . . . . . .	L Near	 0000048A _TEXT	
-addCardPlayer  . . . . . . . . .	P Near	 000003D0 _TEXT	Length= 0000006A Public STDCALL
-  faceCard . . . . . . . . . . .	L Near	 00000405 _TEXT	
-  checkBust  . . . . . . . . . .	L Near	 00000416 _TEXT	
-dealing  . . . . . . . . . . . .	P Near	 000004AE _TEXT	Length= 0000001F Public STDCALL
+addCardDealer  . . . . . . . . .	P Near	 00000479 _TEXT	Length= 000000B3 Public STDCALL
+  faceCard . . . . . . . . . . .	L Near	 000004BD _TEXT	
+  aceDealt . . . . . . . . . . .	L Near	 000004CE _TEXT	
+  lowAce . . . . . . . . . . . .	L Near	 000004E8 _TEXT	
+  checkBust  . . . . . . . . . .	L Near	 000004F9 _TEXT	
+addCardPlayer  . . . . . . . . .	P Near	 000003D0 _TEXT	Length= 000000A9 Public STDCALL
+  faceCard . . . . . . . . . . .	L Near	 0000040A _TEXT	
+  aceDealt . . . . . . . . . . .	L Near	 0000041B _TEXT	
+  lowAce . . . . . . . . . . . .	L Near	 00000435 _TEXT	
+  checkBust  . . . . . . . . . .	L Near	 00000446 _TEXT	
+dealing  . . . . . . . . . . . .	P Near	 0000052C _TEXT	Length= 0000001F Public STDCALL
 displayDealerHand  . . . . . . .	P Near	 000001D5 _TEXT	Length= 000001FB Public STDCALL
   L1 . . . . . . . . . . . . . .	L Near	 000001F4 _TEXT	
   emptyCard  . . . . . . . . . .	L Near	 0000026A _TEXT	
@@ -1215,18 +1271,18 @@ displayPlayerHand  . . . . . . .	P Near	 00000000 _TEXT	Length= 000001D5 Public 
   cardKing . . . . . . . . . . .	L Near	 000001A3 _TEXT	
   cardAce  . . . . . . . . . . .	L Near	 000001B9 _TEXT	
   Return . . . . . . . . . . . .	L Near	 000001CF _TEXT	
-getUserInput . . . . . . . . . .	P Near	 000004CD _TEXT	Length= 00000031 Public STDCALL
-  hit  . . . . . . . . . . . . .	L Near	 000004F3 _TEXT	
-main . . . . . . . . . . . . . .	P Near	 000004FE _TEXT	Length= 0000011D Public STDCALL
-  begin  . . . . . . . . . . . .	L Near	 000004FE _TEXT	
-  L1 . . . . . . . . . . . . . .	L Near	 00000503 _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 00000544 _TEXT	
-  playerRound  . . . . . . . . .	L Near	 00000583 _TEXT	
-  dealerRound  . . . . . . . . .	L Near	 000005AE _TEXT	
-  Win  . . . . . . . . . . . . .	L Near	 000005D0 _TEXT	
-  Lose . . . . . . . . . . . . .	L Near	 000005DC _TEXT	
-  Tie  . . . . . . . . . . . . .	L Near	 000005E8 _TEXT	
-  endL . . . . . . . . . . . . .	L Near	 000005F2 _TEXT	
+getUserInput . . . . . . . . . .	P Near	 0000054B _TEXT	Length= 00000031 Public STDCALL
+  hit  . . . . . . . . . . . . .	L Near	 00000571 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 0000057C _TEXT	Length= 00000128 Public STDCALL
+  begin  . . . . . . . . . . . .	L Near	 0000057C _TEXT	
+  L1 . . . . . . . . . . . . . .	L Near	 00000581 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 000005C2 _TEXT	
+  playerRound  . . . . . . . . .	L Near	 00000601 _TEXT	
+  dealerRound  . . . . . . . . .	L Near	 0000062C _TEXT	
+  Win  . . . . . . . . . . . . .	L Near	 00000659 _TEXT	
+  Lose . . . . . . . . . . . . .	L Near	 00000665 _TEXT	
+  Tie  . . . . . . . . . . . . .	L Near	 00000671 _TEXT	
+  endL . . . . . . . . . . . . .	L Near	 0000067B _TEXT	
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
