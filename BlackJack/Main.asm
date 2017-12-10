@@ -9,6 +9,7 @@ playerHand BYTE 14 DUP(?)
 cardsInPlayerHand BYTE 0
 sumOfPlayerHand DWORD 0
 stayValue BYTE 0
+playerHighAce BYTE 0
 playerBust DWORD 0
 player21 DWORD 0
 playerHandIndicator BYTE "------Your Hand-----", 0ah, "sum:", 0h
@@ -17,14 +18,16 @@ playerHandIndicator BYTE "------Your Hand-----", 0ah, "sum:", 0h
 dealerHand BYTE 14 DUP(?), 1
 cardsInDealerHand BYTE 0
 sumOfDealerHand DWORD 0
+dealerHighAce BYTE 0
 dealerBust DWORD 0
 dealer21 DWORD 0
 dealerHandIndicator BYTE "------Dealer's Hand------", 0ah, 0h
+sumText BYTE "sum:", 0h
 
 ;End Conditions
-winMessage BYTE "You WIN!!", 0ah, 0h
-loseMessage BYTE "You Lost....", 0ah, "Better luck next time.", 0ah, 0h
-tieMessage BYTE "There is a push.", 0ah, 0h
+winMessage BYTE 0ah, "YOU WIN!!", 0ah, 0h
+loseMessage BYTE 0ah, "YOU LOST....", 0ah, "Better luck next time.", 0ah, 0h
+tieMessage BYTE 0ah, "THERE IS A PUSH.", 0ah, 0h
 
 ;User input values
 whatToDo BYTE "Would you like to hit or stay?", 0ah, "Type 'hit' or 'stay' then press enter to submit.", 0ah, 0h
@@ -284,9 +287,6 @@ displayPlayerHand endp
 displayDealerHand proc
 	mov edx, OFFSET dealerHandIndicator
 	call WriteString ;Title hand
-	mov eax, sumOfDealerHand
-	call WriteInt
-	call CrLf
 	mov ecx, LENGTHOF dealerHand ;set loop number for number of cards in hand
 	dec ecx ;decrease ecx bacause array starts with 0 not 1
 	L1: ;loop through all cards
@@ -447,6 +447,7 @@ addCardPlayer proc
 
 	cmp eax, 14 ;compare to ace card
 	je aceDealt
+
 	cmp eax, 10 ;compare to determine if facecard
 	jg faceCard
 
@@ -468,6 +469,7 @@ addCardPlayer proc
 		mov ebx, sumOfPlayerHand
 		add ebx, 11 ;high ace value
 		mov sumOfPlayerHand, ebx
+		mov playerHighAce, 1 ;store that hend has a high ace
 		jmp checkBust
 
 		lowAce:
@@ -477,19 +479,33 @@ addCardPlayer proc
 			jmp checkBust
 
 	checkBust:
-		mov eax, player21
+		;check if hand sums to 21
+		mov eax, player21 
 		mov ebx, 1
 		cmp sumOfPlayerHand, 21 ;find if hand is over 21
 		cmove eax, ebx
 		mov player21, eax
 
+		;check if hand is greater than 21
 		mov eax, playerBust
 		mov ebx, 1
 		cmp sumOfPlayerHand, 21
 		cmova eax, ebx
-		mov playerBust, eax
-		ret
-		
+		cmp eax, 1
+		jne continue
+		cmp playerHighAce, 1
+		jne bust
+		mov playerHighAce, 0
+		mov eax, sumOfPlayerHand
+		sub eax, 10
+		mov sumOfPlayerHand, eax
+		jmp checkBust
+
+		bust:
+			mov playerBust, 1
+			ret
+		continue:
+			ret
 
 addCardPlayer endp
 
@@ -528,6 +544,7 @@ addCardDealer proc
 		mov ebx, sumOfDealerHand
 		add ebx, 11 ;high ace value
 		mov sumOfDealerHand, ebx
+		mov dealerHighAce, 1
 		jmp checkBust
 
 		lowAce:
@@ -536,18 +553,34 @@ addCardDealer proc
 			mov sumOfDealerHand, ebx
 			jmp checkBust
 
-	checkBust:
-		mov eax, dealer21
+		checkBust:
+		;check if hand sums to 21
+		mov eax, dealer21 
 		mov ebx, 1
 		cmp sumOfDealerHand, 21 ;find if hand is over 21
 		cmove eax, ebx
 		mov dealer21, eax
 
+		;check if hand is greater than 21
 		mov eax, dealerBust
 		mov ebx, 1
 		cmp sumOfDealerHand, 21
 		cmova eax, ebx
-		mov dealerBust, eax
+		cmp eax, 1
+		jne continue
+		cmp dealerHighAce, 1
+		jne bust
+		mov dealerHighAce, 0
+		mov eax, sumOfDealerHand
+		sub eax, 10
+		mov sumOfDealerHand, eax
+		jmp checkBust
+
+		bust:
+			mov dealerBust, 1
+			ret
+		continue:
+			ret
 		
 		ret
 addCardDealer endp
@@ -582,6 +615,19 @@ getUserInput proc
 		ret
 	
 getUserInput endp
+
+endDisplay proc
+	mov al, dealerHand
+	mov [dealerHand + 14], al
+	call displayDealerHand
+	mov edx, OFFSET sumText
+	call WriteString
+	mov eax, sumOfDealerHand
+	call WriteInt
+	call CrLf
+	call displayPlayerHand
+	ret
+endDisplay endp
 	
 
 main proc
@@ -592,14 +638,16 @@ main proc
 	L1: ;resets all values of playerHand to 0
 		mov [playerHand + ecx], 0
 	loop L1
-	mov playerHand, 0 
+	mov playerHand, 0
 	mov sumOfPlayerHand, 0
 	mov cardsInPlayerHand, 0
 	mov stayValue, 0
 	mov playerBust, 0
 	mov player21, 0
+	mov playerHighAce, 0
 
 	;reset all values of dealer hand
+	mov [dealerHand + 14], 1
 	mov ecx, 13 ;skip up side down card
 	L2:
 		mov [dealerHand+ecx], 0
@@ -609,6 +657,7 @@ main proc
 	mov cardsInDealerHand, 0
 	mov dealerBust, 0
 	mov dealer21, 0
+	mov dealerHighAce, 0
 
 	call Randomize ;seed RNG for program
 	call dealing ;deal and display 2 cards to player and dealer "dummy card" for dealer displayed upside down
@@ -644,14 +693,17 @@ main proc
 	Win:
 		mov edx, OFFSET winMessage
 		call WriteString
+		call endDisplay
 		jmp endL
 	Lose:
 		mov edx, OFFSET loseMessage
 		call WriteString
+		call endDisplay
 		jmp endL
 	Tie:
 		mov edx, OFFSET tieMessage
 		call WriteString
+		call endDisplay
 	endL:
 		mov edx, OFFSET newGame ;display instructions for player
 		call WriteString
